@@ -1,0 +1,58 @@
+{
+  "description": "CloudLinux 6 i686 image template for OpenNebula for Test System",
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+        "provisioners/enable_cl_internal_repos.sh",
+        "provisioners/epel.sh",
+        "provisioners/opennebula.sh",
+        "provisioners/restore_cl_default_repos.sh",
+        "provisioners/cleanup_vm.sh"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "name": "cloudlinux-6-i686.ts",
+      "type": "qemu",
+      "iso_urls": [
+          "http://koji.cloudlinux.com/cloudlinux/6/iso/i386/CloudLinux-6.7-i386-netinstall.iso",
+          "http://repo.cloudlinux.com/cloudlinux/6/iso/i386/CloudLinux-6.7-i386-netinstall.iso"
+      ],
+      "iso_checksum": "edf2f9abfc96f26e7d2a703c0d4e1cf0c40a1452ff5f3ef365242ad9290da3d1",
+      "iso_checksum_type": "sha256",
+      "output_directory": "builds/cloudlinux-6-i686.ts",
+      "shutdown_command": "shutdown -P now",
+      "disk_size": 1350,
+      "format": "raw",
+      "headless": true,
+      "accelerator": "kvm",
+      "http_directory": "http",
+      "ssh_username": "root",
+      "ssh_password": "vagrant",
+      "ssh_wait_timeout": "3600s",
+      "vm_name": "cloudlinux-6-i686.ts.{{isotime \"20060102\"}}",
+      "net_device": "virtio-net",
+      "disk_interface": "virtio",
+      "boot_wait": "5s",
+      "qemuargs": [
+        ["-m", "1024"],
+        ["-smp", "2"]
+      ],
+      "boot_command": [
+        "<tab>",
+        " text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/cloudlinux-6-i686.opennebula.ks.cfg<enter>",
+        "<enter>"
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "compress",
+      "output": "builds/cloudlinux-6-i686.ts/cloudlinux-6-i686.ts.{{isotime \"20060102\"}}.gz",
+      "keep_input_artifact": true,
+      "compression_level": 9
+     }
+  ]
+}

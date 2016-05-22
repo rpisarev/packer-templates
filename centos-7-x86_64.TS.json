@@ -1,0 +1,56 @@
+{
+  "description": "CentOS 7.2 x86_64 image template for OpenNebula for Test System",
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+        "provisioners/epel.sh",
+        "provisioners/opennebula.sh",
+        "provisioners/cleanup_vm.sh"
+      ]
+    }
+  ],
+  "builders": [
+    {
+      "name": "centos-7-x86_64.ts",
+      "type": "qemu",
+      "iso_urls": [
+        "http://ftp.rrzn.uni-hannover.de/centos/7/isos/x86_64/CentOS-7-x86_64-NetInstall-1511.iso",
+        "http://ftp.agh.edu.pl/centos/7/isos/x86_64/CentOS-7-x86_64-NetInstall-1511.iso",
+        "http://repo.fedora.md/centos/7/isos/x86_64/CentOS-7-x86_64-NetInstall-1511.iso"
+      ],
+      "iso_checksum": "b9e2480ca2f1b17f27c03f2cf31c4920d5cc70bf",
+      "iso_checksum_type": "sha1",
+      "output_directory": "builds/centos-7-x86_64.ts",
+      "shutdown_command": "shutdown -P now",
+      "disk_size": 1200,
+      "format": "raw",
+      "headless": true,
+      "accelerator": "kvm",
+      "http_directory": "http",
+      "ssh_username": "root",
+      "ssh_password": "vagrant",
+      "ssh_wait_timeout": "3600s",
+      "vm_name": "centos-7-x86_64.ts.{{isotime \"20060102\"}}",
+      "net_device": "virtio-net",
+      "disk_interface": "virtio",
+      "boot_wait": "5s",
+      "qemuargs": [
+        ["-m", "1024"]
+      ],
+      "boot_command": [
+        "<tab>",
+        " text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/centos-7-x86_64.opennebula.ks.cfg<enter>",
+        "<enter>"
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "compress",
+      "output": "builds/centos-7-x86_64.ts/centos-7-x86_64.ts.{{isotime \"20060102\"}}.gz",
+      "keep_input_artifact": true,
+      "compression_level": 9
+     }
+  ]
+}
